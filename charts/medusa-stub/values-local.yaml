@@ -1,0 +1,14 @@
+domain: localtest.me
+
+image:
+  repository: sirzechs66/medusa-stub
+  tag: v4
+  pullPolicy: IfNotPresent
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi

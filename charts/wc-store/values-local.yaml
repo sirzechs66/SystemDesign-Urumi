@@ -1,0 +1,79 @@
+global:
+  imageRegistry: public.ecr.aws
+  security:
+    allowInsecureImages: true
+    secureImage: true
+  storageClass: "standard"
+
+wordpress:
+  service:
+    type: ClusterIP
+
+  image:
+    repository: bitnami/wordpress
+    tag: latest
+    pullPolicy: IfNotPresent
+    debug: true
+
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1001
+    runAsNonRoot: true
+
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+
+  volumePermissions:
+    enabled: true
+
+  # --- APPLICATION CONFIG ---
+  wordpressUsername: admin
+  wordpressPassword: "local-password"
+  wordpressEmail: admin@localtest.me
+
+  wordpressPlugins: "woocommerce"
+
+  extraEnvVars:
+        - name: WORDPRESS_REVERSE_PROXY_X_FORWARDED_PROTO
+          value: "http"
+        - name: WORDPRESS_REVERSE_PROXY_X_FORWARDED_PORT
+          value: "80"
+        - name: WORDPRESS_EXTRA_WP_CONFIG_CONTENT
+          value: |
+            define('WP_HOME', 'http://' . $_SERVER['HTTP_HOST']);
+            define('WP_SITEURL', 'http://' . $_SERVER['HTTP_HOST']);
+
+  # --- RESOURCE GUARDRAILS ---
+  resources:
+    limits:
+      cpu: 800m
+      memory: 1.5Gi
+    requests:
+      cpu: 400m
+      memory: 1Gi
+
+  # --- NETWORKING ---
+  ingress:
+      enabled: true
+      ingressClassName: nginx
+      annotations:
+        nginx.ingress.kubernetes.io/proxy-body-size: "64m"
+        nginx.ingress.kubernetes.io/ssl-redirect: "false"
+        nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
+
+mariadb:
+  image:
+    repository: bitnami/mariadb
+    tag: latest
+  auth:
+    database: bitnami_wordpress
+    username: bn_wordpress
+    password: "local-db-password"
+  primary:
+    service:
+      type: ClusterIP
+    resources:
+      limits:
+        cpu: 300m
+        memory: 512Mi

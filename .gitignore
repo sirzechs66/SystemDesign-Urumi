@@ -1,0 +1,21 @@
+# Node
+node_modules/
+npm-debug.log
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# Builds
+dist/
+build/
+
+# DB
+*.sqlite
+
+# OS
+.DS_Store
+
+# Kubernetes temp
+*.tgz

@@ -8,6 +8,10 @@ This project was built as part of the **Urumi AI SDE Internship – Round 1 (Sys
 
 ---
 
+<img width="1551" height="1021" alt="Screenshot 2026-02-13 143342" src="https://github.com/user-attachments/assets/a8c77302-2708-48cb-b152-dab52d77b636" />
+
+---
+
 ## 🎯 Key Capabilities
 
 - 🚀 One-click provisioning of ecommerce stores
@@ -33,6 +37,8 @@ This project was built as part of the **Urumi AI SDE Internship – Round 1 (Sys
 
 ## 🧩 Architecture
 
+<img width="2308" height="1034" alt="System_Design_urumi_img" src="https://github.com/user-attachments/assets/cb507f19-a277-4945-b902-eaabc10b885d" />
+
 ### Control Plane
 
 - **Backend API**: Node.js (Express)
@@ -48,11 +54,11 @@ This project was built as part of the **Urumi AI SDE Internship – Round 1 (Sys
 
 ### Data Plane (per store)
 
-- Dedicated Kubernetes Namespace
+- Dedicated Kubernetes namespace
     
 - Helm-managed workloads
     
-- Persistent Volumes for databases
+- Persistent volumes for databases
     
 - Ingress with stable URLs
     
@@ -72,7 +78,7 @@ This project was built as part of the **Urumi AI SDE Internship – Round 1 (Sys
 
 ## 🏗️ Repository Structure
 
-`. ├── backend/              # Orchestrator API + worker │   ├── index.js │   ├── package.json │   └── database.sqlite ├── frontend/             # React dashboard (Vite) │   ├── src/ │   ├── dist/ │   └── package.json ├── charts/ │   ├── wc-store/         # WooCommerce Helm chart │   │   ├── Chart.yaml │   │   ├── values-local.yaml │   │   └── values-prod.yaml │   └── medusa-stub/      # Medusa stub Helm chart │       ├── Chart.yaml │       └── values-*.yaml ├── kind-config.yaml      # Local Kubernetes cluster config └── README.md`
+`. ├── backend/                 # Orchestrator API + provisioning worker │   ├── index.js             # Express API + BullMQ worker │   ├── package.json │   └── database.sqlite      # Store metadata (status, timestamps, URLs) │ ├── frontend/                # React dashboard (Vite) │   ├── src/ │   ├── dist/ │   └── package.json │ ├── charts/ │   ├── wc-store/            # WooCommerce Helm chart (fully implemented) │   │   ├── Chart.yaml │   │   ├── values-local.yaml │   │   └── values-prod.yaml │   │ │   └── medusa-stub/         # MedusaJS stub Helm chart (extensible) │       ├── Chart.yaml │       └── values-local.yaml │ ├── kind-config.yaml         # Local Kubernetes (Kind) cluster config └── README.md`
 
 ---
 
@@ -198,7 +204,7 @@ Install NGINX Ingress Controller:
 
 ### 2️⃣ Backend Configuration (Local)
 
-`backend/.env`:
+Create `backend/.env`:
 
 `ENVIRONMENT=local LOCAL_BASE_DOMAIN=localtest.me PORT=3005  REDIS_HOST=127.0.0.1 REDIS_PORT=6379  CHARTS_BASE_PATH=/absolute/path/to/charts`
 
@@ -210,7 +216,7 @@ Start backend:
 
 ### 3️⃣ Frontend Configuration
 
-`frontend/.env`:
+Create `frontend/.env`:
 
 `VITE_API_BASE=http://localhost:3005/api`
 
@@ -233,7 +239,7 @@ From the dashboard:
 3. Click **Launch**
     
 
-Store URL:
+Store URL format:
 
 `http://<store-id>.localtest.me`
 
@@ -256,7 +262,7 @@ Store URL:
 
 ### Backend `.env` (Prod)
 
-`ENVIRONMENT=prod PUBLIC_IP=<EC2_PUBLIC_IP> STORE_PORT=30080 PORT=3005  REDIS_HOST=127.0.0.1 REDIS_PORT=6379  CHARTS_BASE_PATH=/home/ubuntu/.../charts`
+`ENVIRONMENT=prod PUBLIC_IP=<EC2_PUBLIC_IP> PORT=3005  REDIS_HOST=127.0.0.1 REDIS_PORT=6379  CHARTS_BASE_PATH=/home/ubuntu/.../charts`
 
 Ensure EC2 Security Group allows:
 
@@ -264,14 +270,12 @@ Ensure EC2 Security Group allows:
     
 - TCP 3005
     
-- TCP 30080
-    
 
 ---
 
 ### Frontend Build (Prod)
 
-`frontend/.env.production`:
+Create `frontend/.env.production`:
 
 `VITE_API_BASE=http://<EC2_PUBLIC_IP>:3005/api`
 
@@ -341,7 +345,7 @@ Build and serve:
     
 - BullMQ enables safe async workflows
     
-- SQLite sufficient for metadata (swap-ready for Postgres)
+- SQLite is sufficient for metadata (swap-ready for Postgres)
     
 - Guardrails focus on **control-plane safety**, not user traffic
     
